@@ -76,7 +76,38 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5173 and click **Train Model** on the dashboard.
+Open http://localhost:5173. The pre-trained model in `backend/models/scorecard.joblib`
+loads automatically — no Kaggle CSV needed for scoring or viewing dashboard stats.
+Click **Train Models** only if you have `application_train.csv` locally.
+
+## Live demo (Vercel + Render)
+
+The repo includes `render.yaml` (backend) and `frontend/vercel.json` (SPA routing).
+
+### 1. Backend on Render
+
+1. Go to [render.com](https://render.com) → **New** → **Blueprint**
+2. Connect **Tjay-cmd/sa-credit-scorecard** and apply the blueprint
+3. After deploy, copy the API URL (e.g. `https://sa-credit-scorecard-api.onrender.com`)
+4. Test: `GET /health` should return `"model_trained": true`
+
+**Note:** Free-tier Render services spin down after ~15 min idle; the first request
+after sleep takes ~30–60 s. `/train` requires the Kaggle CSV locally — the hosted
+demo uses the committed pre-trained model only.
+
+### 2. Frontend on Vercel
+
+1. Go to [vercel.com/new](https://vercel.com/new) → import **Tjay-cmd/sa-credit-scorecard**
+2. Set **Root Directory** to `frontend`
+3. Framework preset: **Vite** (build: `npm run build`, output: `dist`)
+4. Add environment variable:
+   - `VITE_API_URL` = your Render API URL (no trailing slash)
+5. Deploy
+
+### 3. Wire CORS (optional)
+
+Vercel `*.vercel.app` URLs are already allowed via regex. For a custom domain,
+set `FRONTEND_URL` on Render to your Vercel production URL and redeploy.
 
 ## How it works
 
