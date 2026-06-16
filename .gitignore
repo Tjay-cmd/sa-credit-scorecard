@@ -1,0 +1,23 @@
+# Python
+backend/.venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Kaggle data — too large for GitHub (158 MB); download locally from Kaggle
+kaggle_data/*.csv
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Misc
+.DS_Store
+Thumbs.db
+*.log
