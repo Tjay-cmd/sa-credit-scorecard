@@ -15,7 +15,7 @@ export default function DecisionBadge({ decision, large = false }) {
   return (
     <span
       className={`inline-block font-bold rounded-full border ${size} ${
-        STYLES[decision] ?? 'bg-slate-100 text-slate-600 border-slate-300'
+        STYLES[decision] ?? 'bg-slate-100 text-[#3D6666] border-slate-300'
       }`}
     >
       {LABELS[decision] ?? decision}

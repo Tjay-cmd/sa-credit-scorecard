@@ -10,34 +10,53 @@ import {
 } from 'recharts'
 
 const BAND_COLORS = {
-  accept: '#10b981',
-  refer: '#f59e0b',
-  reject: '#ef4444',
+  accept: '#00CDB7',
+  refer: '#FBBF24',
+  reject: '#EF4444',
+}
+
+const TOOLTIP_STYLE = {
+  backgroundColor: '#112B2B',
+  border: '1px solid #1A3D3D',
+  borderRadius: 8,
+  fontSize: 12,
+  color: '#e2e8f0',
 }
 
 export default function ScoreDistributionChart({ distribution }) {
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={distribution} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-        <XAxis
-          dataKey="min_score"
-          tick={{ fontSize: 11, fill: '#64748b' }}
-          interval={4}
-        />
-        <YAxis tick={{ fontSize: 11, fill: '#64748b' }} />
-        <Tooltip
-          formatter={(value) => [value.toLocaleString(), 'Applicants']}
-          labelFormatter={(label, payload) =>
-            payload?.[0] ? `Score ${payload[0].payload.bucket} · ${payload[0].payload.band}` : label
-          }
-        />
-        <Bar dataKey="count" radius={[3, 3, 0, 0]}>
-          {distribution.map((entry) => (
-            <Cell key={entry.bucket} fill={BAND_COLORS[entry.band] ?? '#94a3b8'} />
-          ))}
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
+    <div className="rounded-lg bg-[#0D2222] p-2 -mx-1">
+      <ResponsiveContainer width="100%" height={300}>
+        <BarChart data={distribution} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#1A3D3D" />
+          <XAxis
+            dataKey="min_score"
+            tick={{ fontSize: 11, fill: '#8BAAAA' }}
+            axisLine={{ stroke: '#1A3D3D' }}
+            tickLine={{ stroke: '#1A3D3D' }}
+            interval={4}
+          />
+          <YAxis
+            tick={{ fontSize: 11, fill: '#8BAAAA' }}
+            axisLine={{ stroke: '#1A3D3D' }}
+            tickLine={{ stroke: '#1A3D3D' }}
+          />
+          <Tooltip
+            contentStyle={TOOLTIP_STYLE}
+            formatter={(value) => [value.toLocaleString(), 'Applicants']}
+            labelFormatter={(label, payload) =>
+              payload?.[0]
+                ? `Score ${payload[0].payload.bucket} · ${payload[0].payload.band}`
+                : label
+            }
+          />
+          <Bar dataKey="count" radius={[3, 3, 0, 0]}>
+            {distribution.map((entry) => (
+              <Cell key={entry.bucket} fill={BAND_COLORS[entry.band] ?? '#5A8080'} />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
   )
 }

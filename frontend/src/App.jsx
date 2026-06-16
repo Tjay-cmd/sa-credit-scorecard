@@ -5,47 +5,47 @@ import ScoreApplicant from './pages/ScoreApplicant.jsx'
 import WoeTables from './pages/WoeTables.jsx'
 
 const navLinkClass = ({ isActive }) =>
-  `px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+  `block pl-4 pr-3 py-2.5 text-sm font-medium transition-colors border-l-[3px] ${
     isActive
-      ? 'bg-emerald-500/15 text-emerald-400'
-      : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800'
+      ? 'border-[#00CDB7] bg-[#112B2B] text-white'
+      : 'border-transparent text-[#8BAAAA] hover:text-white'
   }`
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-slate-100">
-      <header className="bg-slate-900 border-b border-slate-800 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-emerald-500 flex items-center justify-center font-bold text-slate-900 text-lg">
-              R
-            </div>
-            <div>
-              <h1 className="text-white font-semibold leading-tight">
-                Credit Scorecard Engine
-              </h1>
-              <p className="text-xs text-slate-400 leading-tight">
-                WOE-binned logistic regression · Home Credit data
-              </p>
-            </div>
-          </div>
-          <nav className="flex gap-1">
-            <NavLink to="/dashboard" className={navLinkClass}>
-              Dashboard
-            </NavLink>
-            <NavLink to="/score" className={navLinkClass}>
-              Score Applicant
-            </NavLink>
-            <NavLink to="/woe" className={navLinkClass}>
-              WOE Tables
-            </NavLink>
-            <NavLink to="/inclusion" className={navLinkClass}>
-              Inclusion Gap
-            </NavLink>
-          </nav>
+    <div className="min-h-screen flex bg-[#091A1A]">
+      <aside className="w-[220px] shrink-0 bg-[#091A1A] border-r border-[#1A3D3D] flex flex-col min-h-screen sticky top-0 h-screen">
+        <div className="px-3 pt-4 pb-4 border-b border-[#1A3D3D] flex justify-center">
+          <img
+            src="/images/logo.png"
+            alt="Credit Engine"
+            className="w-[100px] rounded-xl"
+          />
         </div>
-      </header>
-      <main className="max-w-7xl mx-auto px-6 py-8">
+
+        <nav className="flex-1 py-3 space-y-0.5">
+          <NavLink to="/dashboard" className={navLinkClass}>
+            Dashboard
+          </NavLink>
+          <NavLink to="/score" className={navLinkClass}>
+            Score Applicant
+          </NavLink>
+          <NavLink to="/woe" className={navLinkClass}>
+            WOE Tables
+          </NavLink>
+          <NavLink to="/inclusion" className={navLinkClass}>
+            Inclusion Gap
+          </NavLink>
+        </nav>
+
+        <div className="px-4 py-4 border-t border-[#1A3D3D]">
+          <p className="text-[11px] text-[#5A8080] leading-snug">
+            Home Credit Data · 307,511 rows
+          </p>
+        </div>
+      </aside>
+
+      <main className="flex-1 min-w-0 px-8 py-8 overflow-x-hidden">
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />

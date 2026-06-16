@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { scoreApplicant } from '../api/client.js'
 import ContributionChart from '../components/ContributionChart.jsx'
-import DecisionBadge from '../components/DecisionBadge.jsx'
 
 const INCOME_TYPES = [
   'Working', 'State servant', 'Commercial associate', 'Pensioner',
@@ -35,73 +34,169 @@ const DEFAULT_FORM = {
 }
 
 const SCORE_COLORS = {
-  accept: 'text-emerald-600',
-  refer: 'text-amber-600',
-  reject: 'text-red-600',
+  accept: 'text-[#00CDB7]',
+  refer: 'text-[#FBBF24]',
+  reject: 'text-[#EF4444]',
+}
+
+const BADGE_STYLES = {
+  accept: 'bg-[rgba(0,205,183,0.1)] text-[#00CDB7] border border-teal-800',
+  refer: 'bg-[rgba(251,191,36,0.1)] text-[#FBBF24] border border-amber-800/40',
+  reject: 'bg-[rgba(239,68,68,0.1)] text-[#EF4444] border border-red-800/40',
 }
 
 const GAP_BANNERS = {
   inclusion_gap: {
-    cls: 'bg-amber-50 border-amber-300 text-amber-900',
-    title: 'Inclusion Gap',
-    text: 'This applicant would be rejected by a traditional bureau-based model but accepted by an alternative data model.',
+    cls: 'bg-[rgba(251,191,36,0.08)] border-[rgba(251,191,36,0.3)]',
+    titleCls: 'text-[#FBBF24]',
+    title: 'Inclusion Gap Detected',
+    text: 'This applicant is rejected by the traditional bureau-based model but accepted by the alternative data model. They may represent an underserved creditworthy segment.',
+    icon: '⚠',
   },
   risk_divergence: {
-    cls: 'bg-red-50 border-red-300 text-red-900',
+    cls: 'bg-[rgba(167,139,250,0.08)] border-[rgba(167,139,250,0.3)]',
+    titleCls: 'text-[#A78BFA]',
     title: 'Risk Divergence',
     text: 'This applicant passes bureau checks but alternative indicators suggest elevated risk.',
+    icon: '↔',
   },
   refer_overlap: {
-    cls: 'bg-slate-50 border-slate-300 text-slate-700',
+    cls: 'bg-[rgba(148,163,184,0.08)] border-[rgba(148,163,184,0.25)]',
+    titleCls: 'text-slate-300',
     title: 'Refer Overlap',
     text: 'The two scorecards partially disagree — at least one refers this applicant for manual review.',
+    icon: '◎',
+  },
+  agreed_accept: {
+    cls: 'bg-[rgba(0,205,183,0.08)] border-[rgba(0,205,183,0.3)]',
+    titleCls: 'text-[#00CDB7]',
+    title: 'Agreed Accept',
+    text: 'Both models agree: accept.',
+    icon: '✓',
+  },
+  agreed_reject: {
+    cls: 'bg-[rgba(239,68,68,0.08)] border-[rgba(239,68,68,0.3)]',
+    titleCls: 'text-[#EF4444]',
+    title: 'Agreed Reject',
+    text: 'Both models agree: reject.',
+    icon: '✕',
   },
 }
 
-function ScorePanel({ result, accentClass }) {
+function ScorePanel({ result, variant }) {
+  const labelCls = variant === 'alternative' ? 'text-[#A78BFA]' : 'text-[#5A8080]'
+  const labelText = variant === 'alternative' ? 'Alternative' : 'Traditional'
+
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className={`text-xs font-semibold uppercase tracking-wide ${accentClass}`}>
-            {result.label}
-          </p>
-          <p className={`text-5xl font-extrabold leading-none mt-1 ${SCORE_COLORS[result.decision]}`}>
-            {result.score}
-          </p>
-          <p className="text-[11px] text-slate-400 mt-2">
-            Base {result.base_score} {result.raw_score - result.base_score >= 0 ? '+' : '−'}{' '}
-            {Math.abs(result.raw_score - result.base_score).toFixed(1)} pts
-            · PD {(result.probability_of_default * 100).toFixed(1)}%
-          </p>
-        </div>
-        <div className="text-right space-y-2">
-          <DecisionBadge decision={result.decision} />
-          <p className="text-[11px] text-slate-400">
-            ≥{result.thresholds.accept} accept · ≥{result.thresholds.refer} refer
-          </p>
-        </div>
-      </div>
+    <div className="bg-[#0D2222] border border-[#1A3D3D] rounded-xl p-5 flex-1 min-w-0">
+      <p className={`text-[11px] uppercase tracking-wide font-medium mb-2 ${labelCls}`}>
+        {labelText}
+      </p>
+      <p className={`text-[48px] font-bold leading-none ${SCORE_COLORS[result.decision]}`}>
+        {result.score}
+      </p>
+      <span
+        className={`inline-block mt-3 rounded-full px-3 py-1 text-xs font-semibold border ${
+          BADGE_STYLES[result.decision] ?? ''
+        }`}
+      >
+        {result.decision.toUpperCase()}
+      </span>
+      <p className="text-[11px] text-[#5A8080] mt-3">
+        Base {result.base_score} {result.raw_score - result.base_score >= 0 ? '+' : '−'}{' '}
+        {Math.abs(result.raw_score - result.base_score).toFixed(1)} pts · PD{' '}
+        {(result.probability_of_default * 100).toFixed(1)}%
+      </p>
+      <p className="text-[11px] text-[#5A8080] mt-0.5">
+        ≥{result.thresholds.accept} accept · ≥{result.thresholds.refer} refer
+      </p>
     </div>
   )
 }
 
-function Field({ label, children, hint }) {
+function GapBanner({ gapClass }) {
+  const banner = GAP_BANNERS[gapClass]
+  if (!banner) return null
+
   return (
-    <label className="block">
-      <span className="text-xs font-medium text-slate-600">{label}</span>
+    <div className={`rounded-lg border px-4 py-3.5 ${banner.cls}`}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <span className={`text-sm ${banner.titleCls}`}>{banner.icon}</span>
+          <p className={`text-[13px] font-bold ${banner.titleCls}`}>{banner.title}</p>
+        </div>
+        {gapClass === 'inclusion_gap' && (
+          <span
+            className="text-[#5A8080] text-xs cursor-help shrink-0"
+            title="Inclusion gap: traditional model excludes, alternative model accepts"
+          >
+            ?
+          </span>
+        )}
+      </div>
+      <p className="text-xs text-slate-300 mt-1.5 leading-relaxed">{banner.text}</p>
+    </div>
+  )
+}
+
+function SectionHeader({ title }) {
+  return (
+    <div className="mb-4">
+      <h3 className="text-[11px] uppercase tracking-[0.1em] text-[#5A8080] font-medium">
+        {title}
+      </h3>
+      <div className="h-px bg-[#1A3D3D] mt-2" />
+    </div>
+  )
+}
+
+function Field({ label, children, hint, fullWidth = false }) {
+  return (
+    <label className={`block ${fullWidth ? 'col-span-2' : ''}`}>
+      <span className="block text-xs font-medium text-[#8BAAAA] mb-1">{label}</span>
       {children}
-      {hint && <span className="text-[10px] text-slate-400">{hint}</span>}
+      {hint && <span className="block text-[11px] text-[#5A8080] italic mt-1">{hint}</span>}
     </label>
   )
 }
 
 const inputClass =
-  'mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm bg-white ' +
-  'focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500'
+  'w-full rounded-lg border border-[#1A3D3D] bg-[#0D2222] px-3 py-2.5 text-sm text-white ' +
+  'placeholder:text-[#3D6666] focus:outline-none focus:border-[#00CDB7] ' +
+  'focus:shadow-[0_0_0_2px_rgba(0,205,183,0.15)]'
 
 // '' -> null (optional field), otherwise numeric
 const numOrNull = (v) => (v === '' || v === null ? null : Number(v))
+
+function EmptyResults() {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[480px] text-center px-6">
+      <span className="text-4xl text-[#00CDB7] mb-4">→</span>
+      <p className="text-sm text-[#8BAAAA]">
+        Complete the form to generate a credit score
+      </p>
+      <div className="flex flex-wrap justify-center gap-2 mt-5">
+        {['Traditional Score', 'Alternative Score', 'Inclusion Gap Class'].map((pill) => (
+          <span
+            key={pill}
+            className="bg-[#0D2222] border border-[#1A3D3D] text-[#8BAAAA] text-[11px] rounded-full px-2.5 py-1"
+          >
+            {pill}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function Spinner() {
+  return (
+    <span
+      className="inline-block w-4 h-4 border-2 border-[#091A1A]/30 border-t-[#091A1A] rounded-full animate-spin mr-2 align-middle"
+      aria-hidden
+    />
+  )
+}
 
 export default function ScoreApplicant() {
   const [form, setForm] = useState(DEFAULT_FORM)
@@ -145,150 +240,268 @@ export default function ScoreApplicant() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-slate-900">Score Applicant</h2>
-        <p className="text-sm text-slate-500 mt-0.5">
-          Enter applicant details (Home Credit features) to get a credit score, decision
-          and variable-level explanation. External source scores may be left blank.
+    <div className="max-w-7xl">
+      <header className="border-b border-[#1A3D3D] pb-5 mb-7">
+        <h2 className="text-[22px] font-semibold text-white">Score Applicant</h2>
+        <p className="text-[13px] text-[#8BAAAA] mt-1">
+          Enter applicant details to generate a credit score, decision, and variable-level
+          explanation
         </p>
-      </div>
+      </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
-        <form
-          onSubmit={handleSubmit}
-          className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-4"
-        >
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="Annual income">
-              <input type="number" min="0" step="1000" required value={form.AMT_INCOME_TOTAL} onChange={set('AMT_INCOME_TOTAL')} className={inputClass} />
-            </Field>
-            <Field label="Credit amount">
-              <input type="number" min="0" step="1000" required value={form.AMT_CREDIT} onChange={set('AMT_CREDIT')} className={inputClass} />
-            </Field>
-            <Field label="Loan annuity">
-              <input type="number" min="0" step="100" required value={form.AMT_ANNUITY} onChange={set('AMT_ANNUITY')} className={inputClass} />
-            </Field>
-            <Field label="Age (years)">
-              <input type="number" min="18" max="100" step="0.5" required value={form.AGE_YEARS} onChange={set('AGE_YEARS')} className={inputClass} />
-            </Field>
-            <Field label="Years employed" hint="Blank = not working / pensioner">
-              <input type="number" min="0" max="60" step="0.5" value={form.YEARS_EMPLOYED} onChange={set('YEARS_EMPLOYED')} className={inputClass} />
-            </Field>
-            <Field label="Family members">
-              <input type="number" min="1" max="25" required value={form.CNT_FAM_MEMBERS} onChange={set('CNT_FAM_MEMBERS')} className={inputClass} />
-            </Field>
-            <Field label="Income type">
-              <select value={form.NAME_INCOME_TYPE} onChange={set('NAME_INCOME_TYPE')} className={inputClass}>
-                {INCOME_TYPES.map((o) => <option key={o} value={o}>{o}</option>)}
-              </select>
-            </Field>
-            <Field label="Education">
-              <select value={form.NAME_EDUCATION_TYPE} onChange={set('NAME_EDUCATION_TYPE')} className={inputClass}>
-                {EDUCATION_TYPES.map((o) => <option key={o} value={o}>{o}</option>)}
-              </select>
-            </Field>
-            <Field label="Family status">
-              <select value={form.NAME_FAMILY_STATUS} onChange={set('NAME_FAMILY_STATUS')} className={inputClass}>
-                {FAMILY_STATUSES.map((o) => <option key={o} value={o}>{o}</option>)}
-              </select>
-            </Field>
-            <Field label="Region rating" hint="1 = best, 3 = worst">
-              <select value={form.REGION_RATING_CLIENT} onChange={set('REGION_RATING_CLIENT')} className={inputClass}>
-                {[1, 2, 3].map((r) => <option key={r} value={r}>{r}</option>)}
-              </select>
-            </Field>
-            <Field label="Ext. source 1 (0–1)" hint="Optional">
-              <input type="number" min="0" max="1" step="0.01" value={form.EXT_SOURCE_1} onChange={set('EXT_SOURCE_1')} className={inputClass} />
-            </Field>
-            <Field label="Ext. source 2 (0–1)" hint="Optional">
-              <input type="number" min="0" max="1" step="0.01" value={form.EXT_SOURCE_2} onChange={set('EXT_SOURCE_2')} className={inputClass} />
-            </Field>
-            <Field label="Ext. source 3 (0–1)" hint="Optional">
-              <input type="number" min="0" max="1" step="0.01" value={form.EXT_SOURCE_3} onChange={set('EXT_SOURCE_3')} className={inputClass} />
-            </Field>
-            <Field label="Gender">
-              <select value={form.CODE_GENDER} onChange={set('CODE_GENDER')} className={inputClass}>
-                <option value="F">Female</option>
-                <option value="M">Male</option>
-              </select>
-            </Field>
-            <Field label="Owns car">
-              <select value={form.FLAG_OWN_CAR} onChange={set('FLAG_OWN_CAR')} className={inputClass}>
-                <option value="Y">Yes</option>
-                <option value="N">No</option>
-              </select>
-            </Field>
-            <Field label="Owns realty">
-              <select value={form.FLAG_OWN_REALTY} onChange={set('FLAG_OWN_REALTY')} className={inputClass}>
-                <option value="Y">Yes</option>
-                <option value="N">No</option>
-              </select>
-            </Field>
+      <div className="flex flex-col lg:flex-row gap-8 items-start">
+        <form onSubmit={handleSubmit} className="w-full lg:w-[45%] shrink-0 space-y-6">
+          <div>
+            <SectionHeader title="Financial Profile" />
+            <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+              <Field label="Annual income" fullWidth>
+                <input
+                  type="number"
+                  min="0"
+                  step="1000"
+                  required
+                  value={form.AMT_INCOME_TOTAL}
+                  onChange={set('AMT_INCOME_TOTAL')}
+                  className={inputClass}
+                />
+              </Field>
+              <Field label="Credit amount">
+                <input
+                  type="number"
+                  min="0"
+                  step="1000"
+                  required
+                  value={form.AMT_CREDIT}
+                  onChange={set('AMT_CREDIT')}
+                  className={inputClass}
+                />
+              </Field>
+              <Field label="Loan annuity">
+                <input
+                  type="number"
+                  min="0"
+                  step="100"
+                  required
+                  value={form.AMT_ANNUITY}
+                  onChange={set('AMT_ANNUITY')}
+                  className={inputClass}
+                />
+              </Field>
+            </div>
           </div>
+
+          <div>
+            <SectionHeader title="Personal Profile" />
+            <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+              <Field label="Age (years)">
+                <input
+                  type="number"
+                  min="18"
+                  max="100"
+                  step="0.5"
+                  required
+                  value={form.AGE_YEARS}
+                  onChange={set('AGE_YEARS')}
+                  className={inputClass}
+                />
+              </Field>
+              <Field label="Years employed" hint="Blank = not working / pensioner">
+                <input
+                  type="number"
+                  min="0"
+                  max="60"
+                  step="0.5"
+                  value={form.YEARS_EMPLOYED}
+                  onChange={set('YEARS_EMPLOYED')}
+                  className={inputClass}
+                />
+              </Field>
+              <Field label="Family members">
+                <input
+                  type="number"
+                  min="1"
+                  max="25"
+                  required
+                  value={form.CNT_FAM_MEMBERS}
+                  onChange={set('CNT_FAM_MEMBERS')}
+                  className={inputClass}
+                />
+              </Field>
+              <Field label="Gender">
+                <select value={form.CODE_GENDER} onChange={set('CODE_GENDER')} className={inputClass}>
+                  <option value="F">Female</option>
+                  <option value="M">Male</option>
+                </select>
+              </Field>
+              <Field label="Family status">
+                <select
+                  value={form.NAME_FAMILY_STATUS}
+                  onChange={set('NAME_FAMILY_STATUS')}
+                  className={inputClass}
+                >
+                  {FAMILY_STATUSES.map((o) => (
+                    <option key={o} value={o}>
+                      {o}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="Owns car">
+                <select value={form.FLAG_OWN_CAR} onChange={set('FLAG_OWN_CAR')} className={inputClass}>
+                  <option value="Y">Yes</option>
+                  <option value="N">No</option>
+                </select>
+              </Field>
+              <Field label="Owns realty">
+                <select
+                  value={form.FLAG_OWN_REALTY}
+                  onChange={set('FLAG_OWN_REALTY')}
+                  className={inputClass}
+                >
+                  <option value="Y">Yes</option>
+                  <option value="N">No</option>
+                </select>
+              </Field>
+            </div>
+          </div>
+
+          <div>
+            <SectionHeader title="Bureau Scores" />
+            <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+              <Field label="Ext. source 1 (0–1)" hint="Optional">
+                <input
+                  type="number"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={form.EXT_SOURCE_1}
+                  onChange={set('EXT_SOURCE_1')}
+                  className={inputClass}
+                />
+              </Field>
+              <Field label="Ext. source 2 (0–1)" hint="Optional">
+                <input
+                  type="number"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={form.EXT_SOURCE_2}
+                  onChange={set('EXT_SOURCE_2')}
+                  className={inputClass}
+                />
+              </Field>
+              <Field label="Ext. source 3 (0–1)" hint="Optional">
+                <input
+                  type="number"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={form.EXT_SOURCE_3}
+                  onChange={set('EXT_SOURCE_3')}
+                  className={inputClass}
+                />
+              </Field>
+              <Field label="Region rating" hint="1 = best, 3 = worst">
+                <select
+                  value={form.REGION_RATING_CLIENT}
+                  onChange={set('REGION_RATING_CLIENT')}
+                  className={inputClass}
+                >
+                  {[1, 2, 3].map((r) => (
+                    <option key={r} value={r}>
+                      {r}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="Education">
+                <select
+                  value={form.NAME_EDUCATION_TYPE}
+                  onChange={set('NAME_EDUCATION_TYPE')}
+                  className={inputClass}
+                >
+                  {EDUCATION_TYPES.map((o) => (
+                    <option key={o} value={o}>
+                      {o}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="Income type">
+                <select
+                  value={form.NAME_INCOME_TYPE}
+                  onChange={set('NAME_INCOME_TYPE')}
+                  className={inputClass}
+                >
+                  {INCOME_TYPES.map((o) => (
+                    <option key={o} value={o}>
+                      {o}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            </div>
+          </div>
+
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 rounded-lg bg-emerald-600 text-white font-semibold text-sm
-                       hover:bg-emerald-700 disabled:opacity-50 transition-colors"
+            className="w-full h-11 mt-6 rounded-lg bg-[#00CDB7] text-[#091A1A] font-bold text-sm
+                       hover:bg-[#00A896] disabled:opacity-50 disabled:cursor-not-allowed
+                       transition-colors flex items-center justify-center"
           >
-            {loading ? 'Scoring…' : 'Score Applicant'}
+            {loading ? (
+              <>
+                <Spinner />
+                Scoring...
+              </>
+            ) : (
+              'Score Applicant'
+            )}
           </button>
+
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-3 py-2 text-xs">
+            <div className="bg-red-950/40 border border-red-800/60 text-red-300 rounded-lg px-3 py-2 text-xs">
               {String(error)}
             </div>
           )}
         </form>
 
-        <div className="lg:col-span-3 space-y-6">
-          {!result && (
-            <div className="bg-white rounded-xl border border-dashed border-slate-300 p-12 text-center text-slate-400">
-              Submit the form to see both scorecard results and the inclusion-gap classification.
-            </div>
-          )}
+        <div className="w-full lg:w-[55%] min-w-0">
+          {!result && <EmptyResults />}
 
           {result && (
-            <>
-              {GAP_BANNERS[result.inclusion_gap_class] && (
-                <div
-                  className={`rounded-xl border px-5 py-4 ${GAP_BANNERS[result.inclusion_gap_class].cls}`}
-                >
-                  <p className="font-bold text-sm">
-                    {GAP_BANNERS[result.inclusion_gap_class].title}
-                  </p>
-                  <p className="text-sm mt-0.5">
-                    {GAP_BANNERS[result.inclusion_gap_class].text}
-                  </p>
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <ScorePanel result={result.traditional} accentClass="text-sky-700" />
-                <ScorePanel result={result.alternative} accentClass="text-violet-700" />
+            <div className="space-y-5">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <ScorePanel result={result.traditional} variant="traditional" />
+                <ScorePanel result={result.alternative} variant="alternative" />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-                  <h3 className="font-semibold text-sky-700 mb-1 text-sm">
-                    Traditional — Variable Contributions
+              <GapBanner gapClass={result.inclusion_gap_class} />
+
+              <div className="space-y-5">
+                <div>
+                  <h3 className="text-[11px] uppercase tracking-wide text-[#5A8080] font-medium mb-3">
+                    Traditional Contributions
                   </h3>
-                  <p className="text-xs text-slate-500 mb-3">
-                    Points added to / subtracted from the base score of {result.traditional.base_score}.
-                  </p>
-                  <ContributionChart contributions={result.traditional.contributions} />
+                  <ContributionChart
+                    contributions={result.traditional.contributions}
+                    positiveColor="#00CDB7"
+                    dark
+                  />
                 </div>
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-                  <h3 className="font-semibold text-violet-700 mb-1 text-sm">
-                    Alternative — Variable Contributions
+                <div>
+                  <h3 className="text-[11px] uppercase tracking-wide text-[#5A8080] font-medium mb-3">
+                    Alternative Contributions
                   </h3>
-                  <p className="text-xs text-slate-500 mb-3">
-                    Non-bureau features only — no EXT_SOURCE, credit amount or region rating.
-                  </p>
-                  <ContributionChart contributions={result.alternative.contributions} />
+                  <ContributionChart
+                    contributions={result.alternative.contributions}
+                    positiveColor="#A78BFA"
+                    dark
+                  />
                 </div>
               </div>
-            </>
+            </div>
           )}
         </div>
       </div>
