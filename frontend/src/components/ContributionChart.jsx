@@ -57,14 +57,14 @@ export default function ContributionChart({
 
   const chart = (
     <ResponsiveContainer width="100%" height={Math.max(data.length * 42, 220)}>
-      <BarChart data={data} layout="vertical" margin={{ top: 5, right: 30, left: 30, bottom: 5 }}>
+      <BarChart data={data} layout="vertical" margin={{ top: 5, right: 16, left: 8, bottom: 5 }}>
         <CartesianGrid strokeDasharray="3 3" stroke={gridColor} horizontal={false} />
-        <XAxis type="number" tick={{ fontSize: 11, fill: axisTick }} />
+        <XAxis type="number" tick={{ fontSize: 10, fill: axisTick }} />
         <YAxis
           type="category"
           dataKey="label"
-          width={120}
-          tick={{ fontSize: 11, fill: yAxisTick }}
+          width={90}
+          tick={{ fontSize: 10, fill: yAxisTick }}
         />
         <Tooltip
           contentStyle={dark ? TOOLTIP_DARK : undefined}

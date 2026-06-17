@@ -149,12 +149,12 @@ export default function WoeTables() {
   }
 
   return (
-    <div className="max-w-7xl">
-      <header className="border-b border-[#1A3D3D] pb-5 mb-7">
-        <h2 className="text-[22px] font-semibold text-white">WOE Tables</h2>
+    <div className="page-container">
+      <header className="border-b border-[#1A3D3D] pb-5 mb-6 md:mb-7">
+        <h2 className="page-title">WOE tables</h2>
         <p className="text-[13px] text-[#8BAAAA] mt-1">
-          Weight of Evidence and Information Value per variable · sorted by IV descending ·
-          variables with IV &lt; 0.02 excluded
+          Weight of Evidence and Information Value by variable. Sorted by IV descending. Variables
+          with IV below 0.02 are excluded from the model.
         </p>
         {tables && (
           <div className="flex flex-wrap gap-2 mt-4">
@@ -180,7 +180,7 @@ export default function WoeTables() {
 
       {error && (
         <div className="bg-red-950/40 border border-red-800/60 text-red-300 rounded-xl px-4 py-3 text-sm">
-          {String(error)} — train the model from the Dashboard first.
+          {String(error)}. Train the model from the Dashboard first.
         </div>
       )}
 
@@ -242,12 +242,12 @@ export default function WoeTables() {
 
                       {isDropped && (
                         <p className="text-[11px] text-[#3D6666] italic mb-3">
-                          Excluded from model — IV below 0.02 threshold
+                          Excluded from the model (IV below 0.02).
                         </p>
                       )}
 
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-[13px]">
+                      <div className="table-scroll-wrap w-full max-w-full min-w-0 rounded-lg">
+                        <table className="w-full text-[13px] min-w-[640px]">
                           <thead>
                             <tr className="bg-[#0D2222] text-left">
                               {[
@@ -338,6 +338,7 @@ export default function WoeTables() {
                           </tbody>
                         </table>
                       </div>
+                      <p className="table-scroll-hint">Scroll for more →</p>
                     </div>
                   )}
                 </div>

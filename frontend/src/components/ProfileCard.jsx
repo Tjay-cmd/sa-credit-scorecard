@@ -77,14 +77,14 @@ export default function ProfileCard({
           </p>
         </div>
 
-        <div className="grid grid-cols-3 gap-3 text-center">
+        <div className="grid grid-cols-3 gap-2 sm:gap-3 text-center">
           {[
-            { value: profile.avg_age, label: 'Avg Age' },
-            { value: formatR(profile.avg_income), label: 'Avg Income' },
-            { value: profile.avg_years_employed ?? '—', label: 'Yrs Employed' },
+            { value: profile.avg_age, label: 'Avg age' },
+            { value: formatR(profile.avg_income), label: 'Avg income' },
+            { value: profile.avg_years_employed ?? '—', label: 'Yrs employed' },
           ].map(({ value, label }) => (
-            <div key={label} className="bg-[#0D2222] rounded-lg p-3">
-              <p className="text-[22px] font-bold text-white leading-tight">{value}</p>
+            <div key={label} className="bg-[#0D2222] rounded-lg p-2 sm:p-3">
+              <p className="text-[18px] sm:text-[22px] font-bold text-white leading-tight">{value}</p>
               <p className="text-[11px] text-[#5A8080] uppercase tracking-wide mt-1">{label}</p>
             </div>
           ))}
@@ -92,7 +92,7 @@ export default function ProfileCard({
 
         <div>
           <p className="text-[11px] font-medium text-[#5A8080] uppercase tracking-wide mb-2">
-            Income Type
+            Income type
           </p>
           <DistBar items={profile.income_type_distribution} color={styles.bar} />
         </div>
@@ -107,7 +107,7 @@ export default function ProfileCard({
         <div className="border-t border-[#1A3D3D] pt-3.5 mt-4">
           <div className="flex items-start justify-between gap-3">
             <p className="text-xs text-[#8BAAAA]">Actual default rate (real outcomes)</p>
-            <p className="text-[28px] font-extrabold leading-none" style={{ color: styles.rate }}>
+            <p className="text-[24px] sm:text-[28px] font-extrabold leading-none" style={{ color: styles.rate }}>
               {(profile.actual_default_rate * 100).toFixed(1)}%
             </p>
           </div>

@@ -18,9 +18,11 @@ function formatTimestamp(iso) {
 
 function StatStripCard({ label, value, valueClass = 'text-white' }) {
   return (
-    <div className="bg-[#0D2222] border border-[#1A3D3D] rounded-xl px-5 py-4 flex-1 min-w-[140px]">
+    <div className="bg-[#0D2222] border border-[#1A3D3D] rounded-xl px-4 sm:px-5 py-4 min-w-0">
       <p className="text-xs text-[#8BAAAA] mb-1">{label}</p>
-      <p className={`text-[28px] font-bold leading-none tabular-nums ${valueClass}`}>{value}</p>
+      <p className={`text-[24px] md:text-[28px] font-bold leading-none tabular-nums ${valueClass}`}>
+        {value}
+      </p>
     </div>
   )
 }
@@ -128,10 +130,10 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-6 max-w-7xl">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-semibold text-white">Model Dashboard</h2>
+    <div className="space-y-6 page-container">
+      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+        <div className="min-w-0">
+          <h2 className="page-title">Model dashboard</h2>
           <p className="text-sm text-[#8BAAAA] mt-1">
             {health?.model_trained ? (
               <>
@@ -142,7 +144,7 @@ export default function Dashboard() {
             ) : (
               <>
                 <span className="inline-block w-2 h-2 rounded-full bg-red-500 mr-1.5 align-middle" />
-                No model trained yet — train to get started
+                No model trained yet. Train from the Dashboard to get started.
               </>
             )}
           </p>
@@ -150,7 +152,7 @@ export default function Dashboard() {
         <button
           onClick={handleTrain}
           disabled={training}
-          className="px-5 py-2.5 rounded-lg bg-[#00CDB7] text-[#091A1A] font-bold text-sm
+          className="w-full md:w-auto min-h-[44px] px-5 py-2.5 rounded-lg bg-[#00CDB7] text-[#091A1A] font-bold text-sm
                      hover:bg-[#00A896] disabled:opacity-50 disabled:cursor-not-allowed
                      transition-colors shrink-0"
         >
@@ -178,14 +180,14 @@ export default function Dashboard() {
 
       {stats && (
         <>
-          <div className="flex flex-wrap gap-4">
+          <div className="grid grid-cols-1 min-[480px]:grid-cols-2 xl:grid-cols-4 gap-4">
             <StatStripCard
               label="Holdout AUC"
               value={stats.traditional.auc.toFixed(3)}
               valueClass="text-[#00CDB7]"
             />
             <StatStripCard
-              label="Gini Coefficient"
+              label="Gini coefficient"
               value={stats.traditional.gini.toFixed(3)}
               valueClass="text-[#00CDB7]"
             />
@@ -195,23 +197,23 @@ export default function Dashboard() {
               valueClass="text-[#FBBF24]"
             />
             <StatStripCard
-              label="Training Rows"
+              label="Training rows"
               value={(stats.n_train + stats.n_test).toLocaleString()}
             />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-6 items-stretch">
             <DualScorecardPanel
               traditional={stats.traditional}
               alternative={stats.alternative}
               xgboostBenchmark={stats.xgboost_benchmark}
             />
-            <div className="bg-[#112B2B] rounded-xl border border-[#1A3D3D] p-5">
-              <div className="flex items-center justify-between mb-3 flex-wrap gap-1">
+            <div className="bg-[#112B2B] rounded-xl border border-[#1A3D3D] p-5 flex flex-col min-h-[420px] lg:min-h-0">
+              <div className="flex items-center justify-between mb-3 flex-wrap gap-2 shrink-0">
                 <h3 className="text-white text-sm font-semibold uppercase tracking-[0.05em]">
                   ROC Curves
                 </h3>
-                <p className="text-xs text-[#8BAAAA]">
+                <p className="text-[11px] sm:text-xs text-[#8BAAAA]">
                   Traditional{' '}
                   <span className="font-bold" style={{ color: TEAL }}>
                     {stats.traditional.auc.toFixed(3)}
@@ -256,22 +258,20 @@ export default function Dashboard() {
             </h3>
             <p className="text-sm text-slate-300 leading-relaxed">
               Under the <strong className="text-white">National Credit Act 34 of 2005 (NCA)</strong>,
-              credit providers must assess affordability and give consumers a clear basis for credit
-              decisions. Where credit is refused or offered on unfavourable terms, consumers have the
-              right to request reasons — and those reasons must be understandable, not a black-box
-              probability.
+              credit providers must assess affordability and explain credit decisions. If an
+              application is refused or offered on unfavourable terms, the consumer can ask why.
+              The answer has to be in plain language, not an opaque model score.
             </p>
             <p className="text-sm text-slate-300 leading-relaxed mt-3">
-              A WOE scorecard gives each variable an explicit points contribution that sums to the
-              final score; every bin is documented in the WOE tables and can be reproduced by hand.
-              XGBoost may achieve higher discrimination (see benchmark above), but SHAP values are
-              post-hoc approximations — useful for analysis, not a substitute for the auditable,
-              regulator-ready point allocation that the NCA&apos;s explainability requirements demand
-              in production.
+              Each WOE variable adds a fixed number of points. Every bin is in the WOE tables and
+              can be checked by hand. The XGBoost benchmark on this dashboard often scores higher
+              on AUC. SHAP explains those predictions after the fact. We still ship the scorecard
+              because auditors and the NCA need point rules you can trace, not post-hoc feature
+              attributions.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-6">
             <DistributionCard
               model={stats.traditional}
               accentColor={TEAL}
@@ -288,7 +288,7 @@ export default function Dashboard() {
             <h3 className="text-white text-sm font-semibold uppercase tracking-[0.05em] mb-4">
               Configuration
             </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
               <div>
                 <p className="text-[11px] uppercase tracking-widest text-[#8BAAAA] mb-1">
                   Base score / PDO
@@ -321,7 +321,7 @@ export default function Dashboard() {
                   Per-model train-score percentiles (p20 / p40)
                 </p>
               </div>
-              <div className="md:col-span-2">
+              <div className="sm:col-span-2">
                 <p className="text-[11px] uppercase tracking-widest text-[#8BAAAA] mb-1">
                   Traditional dropped (IV &lt; 0.02)
                 </p>
@@ -329,7 +329,7 @@ export default function Dashboard() {
                   {stats.traditional.dropped_features.join(', ') || 'none'}
                 </p>
               </div>
-              <div className="md:col-span-2">
+              <div className="sm:col-span-2">
                 <p className="text-[11px] uppercase tracking-widest text-[#8BAAAA] mb-1">
                   Alternative dropped (IV &lt; 0.02)
                 </p>

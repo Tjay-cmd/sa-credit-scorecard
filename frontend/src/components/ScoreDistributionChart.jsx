@@ -23,40 +23,43 @@ const TOOLTIP_STYLE = {
   color: '#e2e8f0',
 }
 
-export default function ScoreDistributionChart({ distribution }) {
+export default function ScoreDistributionChart({ distribution, className = '' }) {
   return (
-    <div className="rounded-lg bg-[#0D2222] p-2 -mx-1">
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={distribution} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#1A3D3D" />
-          <XAxis
-            dataKey="min_score"
-            tick={{ fontSize: 11, fill: '#8BAAAA' }}
-            axisLine={{ stroke: '#1A3D3D' }}
-            tickLine={{ stroke: '#1A3D3D' }}
-            interval={4}
-          />
-          <YAxis
-            tick={{ fontSize: 11, fill: '#8BAAAA' }}
-            axisLine={{ stroke: '#1A3D3D' }}
-            tickLine={{ stroke: '#1A3D3D' }}
-          />
-          <Tooltip
-            contentStyle={TOOLTIP_STYLE}
-            formatter={(value) => [value.toLocaleString(), 'Applicants']}
-            labelFormatter={(label, payload) =>
-              payload?.[0]
-                ? `Score ${payload[0].payload.bucket} · ${payload[0].payload.band}`
-                : label
-            }
-          />
-          <Bar dataKey="count" radius={[3, 3, 0, 0]}>
-            {distribution.map((entry) => (
-              <Cell key={entry.bucket} fill={BAND_COLORS[entry.band] ?? '#5A8080'} />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+    <div className={`rounded-lg bg-[#0D2222] p-2 -mx-1 ${className}`}>
+      <div className="h-[240px] md:h-[320px] w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={distribution} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#1A3D3D" />
+            <XAxis
+              dataKey="min_score"
+              tick={{ fontSize: 10, fill: '#8BAAAA' }}
+              axisLine={{ stroke: '#1A3D3D' }}
+              tickLine={{ stroke: '#1A3D3D' }}
+              interval="preserveStartEnd"
+            />
+            <YAxis
+              tick={{ fontSize: 10, fill: '#8BAAAA' }}
+              axisLine={{ stroke: '#1A3D3D' }}
+              tickLine={{ stroke: '#1A3D3D' }}
+              width={36}
+            />
+            <Tooltip
+              contentStyle={TOOLTIP_STYLE}
+              formatter={(value) => [value.toLocaleString(), 'Applicants']}
+              labelFormatter={(label, payload) =>
+                payload?.[0]
+                  ? `Score ${payload[0].payload.bucket} · ${payload[0].payload.band}`
+                  : label
+              }
+            />
+            <Bar dataKey="count" radius={[3, 3, 0, 0]}>
+              {distribution.map((entry) => (
+                <Cell key={entry.bucket} fill={BAND_COLORS[entry.band] ?? '#5A8080'} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   )
 }

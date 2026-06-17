@@ -27,15 +27,15 @@ export default function DualScorecardPanel({ traditional, alternative, xgboostBe
   }
 
   return (
-    <div className="bg-[#112B2B] rounded-xl border border-[#1A3D3D] p-5">
-      <h3 className="text-white text-sm font-semibold uppercase tracking-[0.05em] mb-1">
-        Model Comparison
+    <div className="bg-[#112B2B] rounded-xl border border-[#1A3D3D] p-5 h-full flex flex-col">
+      <h3 className="text-white text-sm font-semibold uppercase tracking-[0.05em] mb-1 shrink-0">
+        Model comparison
       </h3>
-      <p className="text-xs text-[#8BAAAA] mb-4 leading-relaxed">
-        Traditional and Alternative are production WOE scorecards. XGBoost is a
-        discrimination benchmark on the same features — not used for decisions.
+      <p className="text-xs text-[#8BAAAA] mb-4 leading-relaxed shrink-0">
+        Traditional and Alternative are production WOE scorecards. XGBoost is a benchmark on the
+        same features. It is not used for lending decisions.
       </p>
-      <div className="overflow-x-auto rounded-lg border border-[#1A3D3D]">
+      <div className="table-scroll-wrap rounded-lg border border-[#1A3D3D] shrink-0 w-full max-w-full min-w-0">
         <table className="w-full text-sm min-w-[520px]">
           <thead>
             <tr className="bg-[#0D2222] text-left">
@@ -106,11 +106,12 @@ export default function DualScorecardPanel({ traditional, alternative, xgboostBe
           </tbody>
         </table>
       </div>
+      <p className="table-scroll-hint">Scroll for more →</p>
 
       {xgboostBenchmark?.shap_importance?.length > 0 && (
         <div className="mt-4 pt-4 border-t border-[#1A3D3D]">
           <p className="text-[11px] font-medium uppercase tracking-widest text-[#8BAAAA] mb-2">
-            XGBoost — top features by mean |SHAP|
+            XGBoost: top features by mean |SHAP|
           </p>
           <div className="flex flex-wrap gap-2">
             {xgboostBenchmark.shap_importance.slice(0, 8).map((item) => (

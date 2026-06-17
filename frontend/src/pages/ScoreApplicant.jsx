@@ -49,35 +49,35 @@ const GAP_BANNERS = {
   inclusion_gap: {
     cls: 'bg-[rgba(251,191,36,0.08)] border-[rgba(251,191,36,0.3)]',
     titleCls: 'text-[#FBBF24]',
-    title: 'Inclusion Gap Detected',
-    text: 'This applicant is rejected by the traditional bureau-based model but accepted by the alternative data model. They may represent an underserved creditworthy segment.',
+    title: 'Inclusion gap detected',
+    text: 'The traditional scorecard rejects or refers this applicant. The alternative scorecard accepts them.',
     icon: '⚠',
   },
   risk_divergence: {
     cls: 'bg-[rgba(167,139,250,0.08)] border-[rgba(167,139,250,0.3)]',
     titleCls: 'text-[#A78BFA]',
-    title: 'Risk Divergence',
-    text: 'This applicant passes bureau checks but alternative indicators suggest elevated risk.',
+    title: 'Risk divergence',
+    text: 'The traditional scorecard accepts this applicant. The alternative scorecard rejects them.',
     icon: '↔',
   },
   refer_overlap: {
     cls: 'bg-[rgba(148,163,184,0.08)] border-[rgba(148,163,184,0.25)]',
     titleCls: 'text-slate-300',
-    title: 'Refer Overlap',
-    text: 'The two scorecards partially disagree — at least one refers this applicant for manual review.',
+    title: 'Refer overlap',
+    text: 'At least one scorecard refers this applicant for manual review.',
     icon: '◎',
   },
   agreed_accept: {
     cls: 'bg-[rgba(0,205,183,0.08)] border-[rgba(0,205,183,0.3)]',
     titleCls: 'text-[#00CDB7]',
-    title: 'Agreed Accept',
+    title: 'Agreed accept',
     text: 'Both models agree: accept.',
     icon: '✓',
   },
   agreed_reject: {
     cls: 'bg-[rgba(239,68,68,0.08)] border-[rgba(239,68,68,0.3)]',
     titleCls: 'text-[#EF4444]',
-    title: 'Agreed Reject',
+    title: 'Agreed reject',
     text: 'Both models agree: reject.',
     icon: '✕',
   },
@@ -92,7 +92,7 @@ function ScorePanel({ result, variant }) {
       <p className={`text-[11px] uppercase tracking-wide font-medium mb-2 ${labelCls}`}>
         {labelText}
       </p>
-      <p className={`text-[48px] font-bold leading-none ${SCORE_COLORS[result.decision]}`}>
+      <p className={`text-[36px] sm:text-[48px] font-bold leading-none ${SCORE_COLORS[result.decision]}`}>
         {result.score}
       </p>
       <span
@@ -128,7 +128,7 @@ function GapBanner({ gapClass }) {
         {gapClass === 'inclusion_gap' && (
           <span
             className="text-[#5A8080] text-xs cursor-help shrink-0"
-            title="Inclusion gap: traditional model excludes, alternative model accepts"
+            title="Inclusion gap: traditional rejects or refers, alternative accepts"
           >
             ?
           </span>
@@ -141,7 +141,7 @@ function GapBanner({ gapClass }) {
 
 function SectionHeader({ title }) {
   return (
-    <div className="mb-4">
+    <div className="mb-3 md:mb-4">
       <h3 className="text-[11px] uppercase tracking-[0.1em] text-[#5A8080] font-medium">
         {title}
       </h3>
@@ -152,7 +152,7 @@ function SectionHeader({ title }) {
 
 function Field({ label, children, hint, fullWidth = false }) {
   return (
-    <label className={`block ${fullWidth ? 'col-span-2' : ''}`}>
+    <label className={`block ${fullWidth ? 'md:col-span-2' : ''}`}>
       <span className="block text-xs font-medium text-[#8BAAAA] mb-1">{label}</span>
       {children}
       {hint && <span className="block text-[11px] text-[#5A8080] italic mt-1">{hint}</span>}
@@ -161,7 +161,7 @@ function Field({ label, children, hint, fullWidth = false }) {
 }
 
 const inputClass =
-  'w-full rounded-lg border border-[#1A3D3D] bg-[#0D2222] px-3 py-2.5 text-sm text-white ' +
+  'w-full min-h-[44px] rounded-lg border border-[#1A3D3D] bg-[#0D2222] px-3 py-2.5 text-sm text-white ' +
   'placeholder:text-[#3D6666] focus:outline-none focus:border-[#00CDB7] ' +
   'focus:shadow-[0_0_0_2px_rgba(0,205,183,0.15)]'
 
@@ -170,13 +170,13 @@ const numOrNull = (v) => (v === '' || v === null ? null : Number(v))
 
 function EmptyResults() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[480px] text-center px-6">
+    <div className="flex flex-col items-center justify-center min-h-[320px] md:min-h-[480px] text-center px-4 sm:px-6">
       <span className="text-4xl text-[#00CDB7] mb-4">→</span>
       <p className="text-sm text-[#8BAAAA]">
-        Complete the form to generate a credit score
+        Complete the form to score this applicant.
       </p>
       <div className="flex flex-wrap justify-center gap-2 mt-5">
-        {['Traditional Score', 'Alternative Score', 'Inclusion Gap Class'].map((pill) => (
+        {['Traditional score', 'Alternative score', 'Gap class'].map((pill) => (
           <span
             key={pill}
             className="bg-[#0D2222] border border-[#1A3D3D] text-[#8BAAAA] text-[11px] rounded-full px-2.5 py-1"
@@ -240,20 +240,19 @@ export default function ScoreApplicant() {
   }
 
   return (
-    <div className="max-w-7xl">
-      <header className="border-b border-[#1A3D3D] pb-5 mb-7">
-        <h2 className="text-[22px] font-semibold text-white">Score Applicant</h2>
+    <div className="page-container">
+      <header className="border-b border-[#1A3D3D] pb-5 mb-6 md:mb-7">
+        <h2 className="page-title">Score applicant</h2>
         <p className="text-[13px] text-[#8BAAAA] mt-1">
-          Enter applicant details to generate a credit score, decision, and variable-level
-          explanation
+          Enter applicant details to get a credit score, a decision, and a breakdown by variable.
         </p>
       </header>
 
-      <div className="flex flex-col lg:flex-row gap-8 items-start">
-        <form onSubmit={handleSubmit} className="w-full lg:w-[45%] shrink-0 space-y-6">
+      <div className="flex flex-col lg:flex-row gap-5 lg:gap-8 items-start">
+        <form onSubmit={handleSubmit} className="w-full lg:w-[45%] shrink-0 space-y-5 md:space-y-6">
           <div>
-            <SectionHeader title="Financial Profile" />
-            <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+            <SectionHeader title="Financial profile" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
               <Field label="Annual income" fullWidth>
                 <input
                   type="number"
@@ -291,8 +290,8 @@ export default function ScoreApplicant() {
           </div>
 
           <div>
-            <SectionHeader title="Personal Profile" />
-            <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+            <SectionHeader title="Personal profile" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
               <Field label="Age (years)">
                 <input
                   type="number"
@@ -366,8 +365,8 @@ export default function ScoreApplicant() {
           </div>
 
           <div>
-            <SectionHeader title="Bureau Scores" />
-            <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+            <SectionHeader title="Bureau scores" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
               <Field label="Ext. source 1 (0–1)" hint="Optional">
                 <input
                   type="number"
@@ -446,7 +445,7 @@ export default function ScoreApplicant() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-11 mt-6 rounded-lg bg-[#00CDB7] text-[#091A1A] font-bold text-sm
+            className="w-full md:w-auto md:min-w-[200px] min-h-[44px] mt-4 md:mt-6 px-6 rounded-lg bg-[#00CDB7] text-[#091A1A] font-bold text-sm
                        hover:bg-[#00A896] disabled:opacity-50 disabled:cursor-not-allowed
                        transition-colors flex items-center justify-center"
           >
@@ -482,7 +481,7 @@ export default function ScoreApplicant() {
               <div className="space-y-5">
                 <div>
                   <h3 className="text-[11px] uppercase tracking-wide text-[#5A8080] font-medium mb-3">
-                    Traditional Contributions
+                    Traditional contributions
                   </h3>
                   <ContributionChart
                     contributions={result.traditional.contributions}
@@ -492,7 +491,7 @@ export default function ScoreApplicant() {
                 </div>
                 <div>
                   <h3 className="text-[11px] uppercase tracking-wide text-[#5A8080] font-medium mb-3">
-                    Alternative Contributions
+                    Alternative contributions
                   </h3>
                   <ContributionChart
                     contributions={result.alternative.contributions}
