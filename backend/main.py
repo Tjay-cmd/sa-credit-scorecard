@@ -50,10 +50,8 @@ app = FastAPI(title="Credit Scorecard Engine (Home Credit)", version="3.0.0")
 
 _cors_origins = [
     "http://localhost:5173",
-    "http://127.0.0.1:5173",
+    "https://sa-credit-scorecard.vercel.app",
 ]
-if _frontend := os.getenv("FRONTEND_URL"):
-    _cors_origins.append(_frontend.rstrip("/"))
 
 app.add_middleware(
     CORSMiddleware,
