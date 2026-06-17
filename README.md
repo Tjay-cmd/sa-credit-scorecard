@@ -13,6 +13,11 @@ scratch — no scorecardpy or other pre-built scorecard libraries.
 
 **Repository:** [github.com/Tjay-cmd/sa-credit-scorecard](https://github.com/Tjay-cmd/sa-credit-scorecard)
 
+**Live demo:** [sa-credit-scorecard.vercel.app](https://sa-credit-scorecard.vercel.app) · API: [sa-credit-scorecard-api.onrender.com](https://sa-credit-scorecard-api.onrender.com)
+
+> The hosted demo uses the pre-trained model — no Kaggle CSV required. The Render API
+> may take ~30–60 s to wake on first load after idle (free tier).
+
 ## Dual-track scoring
 
 | | Traditional Scorecard | Alternative Scorecard |
@@ -82,7 +87,10 @@ Click **Train Models** only if you have `application_train.csv` locally.
 
 ## Live demo (Vercel + Render)
 
+**Deployed:** [https://sa-credit-scorecard.vercel.app](https://sa-credit-scorecard.vercel.app) (frontend) · [https://sa-credit-scorecard-api.onrender.com](https://sa-credit-scorecard-api.onrender.com) (API)
+
 The repo includes `render.yaml` (backend) and `frontend/vercel.json` (SPA routing).
+To redeploy or fork, follow the steps below.
 
 ### 1. Backend on Render
 
