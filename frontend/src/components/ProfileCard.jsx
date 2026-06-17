@@ -1,5 +1,5 @@
 const formatR = (v) =>
-  v == null ? '—' : `R${Math.round(v).toLocaleString('en-ZA')}`
+  v == null ? '—' : `R${Math.round(v).toLocaleString()}`
 
 function DistBar({ items, color, muted = false }) {
   return (

@@ -55,9 +55,12 @@ export default function ContributionChart({
   const refLine = dark ? '#1A3D3D' : '#475569'
   const negativeColor = '#EF4444'
 
+  const chartHeight = Math.max(data.length * 42, 220)
+
   const chart = (
-    <ResponsiveContainer width="100%" height={Math.max(data.length * 42, 220)}>
-      <BarChart data={data} layout="vertical" margin={{ top: 5, right: 16, left: 8, bottom: 5 }}>
+    <div className="w-full" style={{ height: chartHeight }}>
+      <ResponsiveContainer width="100%" height={chartHeight}>
+        <BarChart data={data} layout="vertical" margin={{ top: 5, right: 16, left: 8, bottom: 5 }}>
         <CartesianGrid strokeDasharray="3 3" stroke={gridColor} horizontal={false} />
         <XAxis type="number" tick={{ fontSize: 10, fill: axisTick }} />
         <YAxis
@@ -83,7 +86,8 @@ export default function ContributionChart({
           ))}
         </Bar>
       </BarChart>
-    </ResponsiveContainer>
+      </ResponsiveContainer>
+    </div>
   )
 
   if (dark) {

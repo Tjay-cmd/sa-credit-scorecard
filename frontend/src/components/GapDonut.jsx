@@ -1,4 +1,5 @@
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
+import { useChartHeight } from '../hooks/useChartHeight.js'
 
 export const GAP_META = {
   agreed_accept: { label: 'Agreed accept', color: '#00CDB7' },
@@ -17,6 +18,7 @@ const TOOLTIP_STYLE = {
 }
 
 export default function GapDonut({ distribution, distributionPct }) {
+  const height = useChartHeight(240, 260)
   const data = Object.keys(GAP_META).map((key) => ({
     key,
     name: GAP_META[key].label,
@@ -26,8 +28,8 @@ export default function GapDonut({ distribution, distributionPct }) {
 
   return (
     <div>
-      <div className="h-[240px] md:h-[260px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="w-full" style={{ height }}>
+        <ResponsiveContainer width="100%" height={height}>
           <PieChart>
             <Pie
               data={data}

@@ -8,6 +8,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { useChartHeight } from '../hooks/useChartHeight.js'
 
 const DIAGONAL = [
   { fpr: 0, tpr: 0 },
@@ -24,11 +25,13 @@ const TOOLTIP_STYLE = {
 
 /** curves: [{ name, data: [{fpr, tpr}], color }] */
 export default function RocChart({ curves, className = '' }) {
+  const height = useChartHeight(240, 320)
+
   return (
     <div className={`rounded-lg bg-[#0D2222] p-2 -mx-1 ${className}`}>
-      <div className="h-[240px] md:h-[320px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+      <div className="w-full" style={{ height }}>
+        <ResponsiveContainer width="100%" height={height}>
+          <LineChart margin={{ top: 10, right: 10, left: 4, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#1A3D3D" />
             <XAxis
               dataKey="fpr"
@@ -52,6 +55,7 @@ export default function RocChart({ curves, className = '' }) {
               tick={{ fontSize: 10, fill: '#8BAAAA' }}
               axisLine={{ stroke: '#1A3D3D' }}
               tickLine={{ stroke: '#1A3D3D' }}
+              width={36}
               label={{
                 value: 'True positive rate',
                 angle: -90,

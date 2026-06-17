@@ -6,7 +6,7 @@ import ProfileCard from '../components/ProfileCard.jsx'
 const formatBillions = (v) => {
   if (v >= 1e9) return `R${(v / 1e9).toFixed(2)} billion`
   if (v >= 1e6) return `R${(v / 1e6).toFixed(1)} million`
-  return `R${Math.round(v).toLocaleString('en-ZA')}`
+  return `R${Math.round(v).toLocaleString()}`
 }
 
 function DefaultRateRow({ label, rate, color, maxRate }) {
